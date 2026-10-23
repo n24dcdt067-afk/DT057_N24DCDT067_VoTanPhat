@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #1e293b; text-anchor: middle; }
+      .label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; fill: #334155; }
+      .bold-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #0f172a; }
+      .box-input { fill: #f8fafc; stroke: #3b82f6; stroke-width: 2; rx: 8; }
+      .box-dp { fill: #f0fdf4; stroke: #22c55e; stroke-width: 2; rx: 8; }
+      .box-g1 { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; rx: 8; }
+      .box-g2 { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; rx: 8; }
+      .box-cell { fill: #ffffff; stroke: #94a3b8; stroke-width: 1.5; }
+      .cell-text { font-family: 'Consolas', monospace; font-size: 14px; font-weight: bold; text-anchor: middle; fill: #0f172a; }
+      .idx-text { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; fill: #64748b; text-anchor: middle; }
+      .arrow { stroke: #475569; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .diff-box { fill: #fefce8; stroke: #eab308; stroke-width: 2; rx: 8; }
+    </style>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#475569" />
+    </marker>
+  </defs>
+
+  <!-- Khung viền ngoài -->
+  <rect x="10" y="10" width="780" height="480" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" rx="10" />
+
+  <!-- 1. MẢNG ĐẦU VÀO A -->
+  <g transform="translate(150, 30)">
+    <rect x="0" y="0" width="500" height="90" class="box-input" />
+    <text x="250" y="24" class="title">1. Mảng dữ liệu đầu vào: A (Vector{Int})</text>
+    
+    <!-- Các ô của mảng -->
+    <!-- Ô 1 -->
+    <rect x="80" y="38" width="70" height="32" class="box-cell" rx="4" />
+    <text x="115" y="60" class="cell-text">A[1] = 1</text>
+    <text x="115" y="82" class="idx-text">ID: 1</text>
+
+    <!-- Ô 2 -->
+    <rect x="165" y="38" width="70" height="32" class="box-cell" rx="4" />
+    <text x="200" y="60" class="cell-text">A[2] = 6</text>
+    <text x="200" y="82" class="idx-text">ID: 2</text>
+
+    <!-- Ô 3 -->
+    <rect x="250" y="38" width="75" height="32" class="box-cell" rx="4" />
+    <text x="287" y="60" class="cell-text">A[3] = 11</text>
+    <text x="287" y="82" class="idx-text">ID: 3</text>
+
+    <!-- Ô 4 -->
+    <rect x="340" y="38" width="70" height="32" class="box-cell" rx="4" />
+    <text x="375" y="60" class="cell-text">A[4] = 5</text>
+    <text x="375" y="82" class="idx-text">ID: 4</text>
+  </g>
+
+  <!-- Mũi tên từ A xuống DP -->
+  <path d="M 400 120 L 400 155" class="arrow" />
+
+  <!-- 2. BẢNG TRẠNG THÁI DP -->
+  <g transform="translate(180, 160)">
+    <rect x="0" y="0" width="440" height="85" class="box-dp" />
+    <text x="220" y="25" class="title">2. Bảng trạng thái Quy hoạch động dp[(n+1) x (W+1)]</text>
+    <text x="220" y="50" class="label" text-anchor="middle">Tổng mảng S = 23  |  Ngưỡng nửa tổng: W = floor(23 / 2) = 11</text>
+    <text x="220" y="72" class="bold-label" text-anchor="middle" fill="#15803d">
+      Tìm S1 ≤ W lớn nhất có dp[4+1, S1+1] = true  →  S1 = 11
+    </text>
+  </g>
+
+  <!-- Mũi tên từ DP rẽ sang 2 nhóm -->
+  <path d="M 320 245 L 220 285" class="arrow" />
+  <path d="M 480 245 L 580 285" class="arrow" />
+
+  <!-- 3. PHÂN BỔ NHÓM 1 -->
+  <g transform="translate(50, 290)">
+    <rect x="0" y="0" width="320" height="100" class="box-g1" />
+    <text x="160" y="26" class="title" fill="#1e40af">Nhóm 1 (G1) - Lần vết truy ngược</text>
+    <text x="20" y="52" class="bold-label">• Danh sách chỉ số (ID): [3]</text>
+    <text x="20" y="72" class="label">• Các giá trị tương ứng: {11}</text>
+    <text x="20" y="92" class="bold-label" fill="#1e40af">• Tổng nhóm 1: S1 = 11</text>
+  </g>
+
+  <!-- 4. PHÂN BỔ NHÓM 2 -->
+  <g transform="translate(430, 290)">
+    <rect x="0" y="0" width="320" height="100" class="box-g2" />
+    <text x="160" y="26" class="title" fill="#991b1b">Nhóm 2 (G2) - Tập phần bù</text>
+    <text x="20" y="52" class="bold-label">• Danh sách chỉ số (ID): [1, 2, 4]</text>
+    <text x="20" y="72" class="label">• Các giá trị tương ứng: {1, 6, 5}</text>
+    <text x="20" y="92" class="bold-label" fill="#991b1b">• Tổng nhóm 2: S2 = 1 + 6 + 5 = 12</text>
+  </g>
+
+  <!-- Mũi tên từ 2 nhóm xuống kết quả -->
+  <path d="M 210 390 L 330 425" class="arrow" />
+  <path d="M 590 390 L 470 425" class="arrow" />
+
+  <!-- 5. KẾT QUẢ ĐỘ CHÊNH LỆCH -->
+  <g transform="translate(240, 420)">
+    <rect x="0" y="0" width="320" height="50" class="diff-box" />
+    <text x="160" y="24" class="bold-label" text-anchor="middle" fill="#854d0e">
+      ĐỘ CHÊNH LỆCH NHỎ NHẤT:
+    </text>
+    <text x="160" y="42" class="bold-label" text-anchor="middle" fill="#b45309" font-size="15px">
+      diff = |S1 - S2| = |11 - 12| = 1  (Tối ưu)
+    </text>
+  </g>
+</svg>
