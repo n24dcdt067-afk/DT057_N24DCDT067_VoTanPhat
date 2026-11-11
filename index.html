@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mô Phỏng Thuật Toán Chia Mảng Chênh Tổng Ít Nhất (DT057) - Võ Tấn Phát</title>
+  <style>
+    :root {
+      --bg-body: #0b1120;
+      --bg-header: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-sub: #162032;
+      --border-color: #334155;
+      --border-highlight: #60a5fa;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --purple: #8b5cf6;
+      --active-cell: #38bdf8;
+      --active-glow: 0 0 15px rgba(56, 189, 248, 0.5);
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      --radius: 10px;
+    }
+
+    [data-theme="light"] {
+      --bg-body: #f1f5f9;
+      --bg-header: #ffffff;
+      --bg-card: #ffffff;
+      --bg-card-sub: #f8fafc;
+      --border-color: #cbd5e1;
+      --border-highlight: #3b82f6;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #059669;
+      --success-bg: rgba(5, 150, 105, 0.12);
+      --warning: #d97706;
+      --warning-bg: rgba(217, 119, 6, 0.12);
+      --danger: #dc2626;
+      --danger-bg: rgba(220, 38, 38, 0.12);
+      --purple: #7c3aed;
+      --active-cell: #0284c7;
+      --active-glow: 0 0 15px rgba(2, 132, 199, 0.35);
+      --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* TOP HEADER */
+    header {
+      background-color: var(--bg-header);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topic-badge {
+      background: linear-gradient(135deg, #2563eb, #38bdf8);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
+    }
+
+    .header-title-box h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-title-box p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .author-info {
+      text-align: right;
+      font-size: 13px;
+    }
+
+    .author-name {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .author-sub {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    .theme-toggle-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+    .theme-toggle-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* MAIN CONTAINER (3 COLUMNS) */
+    .app-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 340px 1fr 340px;
+      gap: 16px;
+      padding: 16px;
+      max-width: 1800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* CARD STYLES */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title .icon {
+      font-size: 17px;
+    }
+
+    /* FORM CONTROLS */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"], input[type="number"], select {
+      background-color: var(--bg-card-sub);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      width: 100%;
+    }
+
+    input[type="text"]:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .presets-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .preset-btn {
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .preset-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .info-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--bg-card-sub);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .stat-box h4 {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .stat-box p {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 2px;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.35);
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background-color: var(--bg-card-sub);
+    }
+
+    .btn-danger {
+      background-color: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+    .btn-danger:hover {
+      background-color: var(--danger);
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 5px 9px;
+      font-size: 11px;
+      border-radius: 4px;
+    }
+
+    .btn-group-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+    .checkbox-row input {
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+      accent-color: var(--primary);
+    }
+
+    /* SPEED SLIDER */
+    .speed-slider-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .speed-slider-box input[type="range"] {
+      flex: 1;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .speed-val {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      width: 45px;
+      text-align: right;
+    }
+
+    /* RESULT SUMMARY CARD */
+    .summary-card {
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .summary-label {
+      color: var(--text-muted);
+    }
+
+    .summary-val {
+      font-weight: 700;
+    }
+
+    .val-diff {
+      color: var(--warning);
+      font-size: 16px;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .status-idle { background: var(--border-color); color: var(--text-muted); }
+    .status-running { background: var(--primary); color: #fff; }
+    .status-paused { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+    .status-done { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+
+    /* MIDDLE COLUMN - SIMULATION */
+    .middle-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow: hidden;
+    }
+
+    /* ARRAY & GROUP VISUALIZATION */
+    .vis-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .section-subtitle {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .elements-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 52px;
+      align-items: center;
+    }
+
+    .elem-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 4px 10px;
+      min-width: 48px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .elem-chip .chip-idx {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .elem-chip .chip-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .elem-chip.active {
+      border-color: var(--active-cell);
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: var(--active-glow);
+      transform: translateY(-2px);
+    }
+
+    .elem-chip.group-1 {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.2);
+    }
+    .elem-chip.group-1 .chip-val { color: #60a5fa; }
+
+    .elem-chip.group-2 {
+      border-color: #f43f5e;
+      background: rgba(244, 63, 94, 0.2);
+    }
+    .elem-chip.group-2 .chip-val { color: #fb7185; }
+
+    /* GROUPS COMPARISON SPLIT */
+    .groups-split-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .group-box {
+      border-radius: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card-sub);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .group-box.g1 {
+      border-left: 4px solid var(--primary);
+    }
+    .group-box.g2 {
+      border-left: 4px solid #f43f5e;
+    }
+
+    .group-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .group-box.g1 .group-box-header { color: #60a5fa; }
+    .group-box.g2 .group-box-header { color: #fb7185; }
+
+    .group-elements-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 32px;
+      align-items: center;
+    }
+
+    .mini-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+    }
+
+    /* CURRENT ACTION BANNER */
+    .action-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      border: 1px solid var(--border-highlight);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    [data-theme="light"] .action-banner {
+      background: linear-gradient(135deg, #e0f2fe, #f0fdf4);
+      border-color: #38bdf8;
+    }
+
+    .action-banner::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 4px;
+      background: var(--primary);
+    }
+
+    .action-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .action-desc {
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .action-formula {
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 12px;
+      color: var(--warning);
+      background: rgba(0, 0, 0, 0.2);
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
+    }
+    [data-theme="light"] .action-formula {
+      background: rgba(255, 255, 255, 0.7);
+      color: #b45309;
+    }
+
+    /* DP MATRIX TABLE CONTAINER */
+    .table-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 300px;
+    }
+
+    .table-wrapper {
+      flex: 1;
+      overflow: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-card-sub);
+      position: relative;
+      max-height: 480px;
+    }
+
+    table.dp-table {
+      border-collapse: separate;
+      border-spacing: 1px;
+      width: 100%;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    table.dp-table th, table.dp-table td {
+      padding: 6px 8px;
+      min-width: 34px;
+      height: 32px;
+      user-select: none;
+    }
+
+    table.dp-table th {
+      background: var(--bg-header);
+      color: var(--text-muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.dp-table th.sticky-col {
+      left: 0;
+      z-index: 3;
+      background: var(--bg-header);
+      border-right: 1px solid var(--border-color);
+    }
+
+    table.dp-table td.sticky-col {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: var(--bg-card);
+      font-weight: 700;
+      color: var(--text-muted);
+      border-right: 1px solid var(--border-color);
+    }
+
+    table.dp-table td {
+      background: var(--bg-card);
+      color: var(--text-dim);
+      font-family: "Consolas", monospace;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    table.dp-table td.val-true {
+      background: var(--success-bg);
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    table.dp-table td.val-false {
+      background: var(--bg-card);
+      color: var(--text-dim);
+    }
+
+    table.dp-table td.cell-active {
+      outline: 2px solid var(--active-cell);
+      box-shadow: var(--active-glow);
+      z-index: 2;
+      position: relative;
+      font-weight: 800;
+      color: #fff;
+      background: var(--primary) !important;
+    }
+
+    table.dp-table td.cell-source {
+      outline: 2px dashed var(--warning);
+      background: var(--warning-bg) !important;
+      color: var(--warning);
+      z-index: 1;
+      position: relative;
+    }
+
+    table.dp-table td.cell-trace {
+      background: rgba(245, 158, 11, 0.3) !important;
+      color: #fbbf24 !important;
+      font-weight: 800;
+      outline: 2px solid #f59e0b;
+      position: relative;
+    }
+
+    /* CONTROLS TOOLBAR AT BOTTOM OF MIDDLE COLUMN */
+    .controls-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      gap: 10px;
+    }
+
+    .playback-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-counter {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* RIGHT COLUMN - EXECUTION LOG & HISTORY */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .log-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 380px;
+    }
+
+    .log-list {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg-card-sub);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 11.5px;
+      max-height: 400px;
+    }
+
+    .log-item {
+      padding: 6px 8px;
+      border-radius: 5px;
+      line-height: 1.4;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.15);
+      border-left: 3px solid var(--border-color);
+      word-break: break-word;
+    }
+    [data-theme="light"] .log-item {
+      background: #ffffff;
+    }
+
+    .log-item.log-init { border-left-color: var(--primary); }
+    .log-item.log-dp { border-left-color: var(--purple); }
+    .log-item.log-trace { border-left-color: var(--warning); }
+    .log-item.log-done { border-left-color: var(--success); }
+    .log-item.log-warn { border-left-color: var(--danger); }
+
+    .log-step-badge {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: var(--border-color);
+      color: var(--text-main);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .log-text {
+      flex: 1;
+      color: var(--text-main);
+    }
+
+    /* HISTORY TABLE */
+    .history-card {
+      max-height: 260px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-wrapper {
+      overflow-y: auto;
+      max-height: 180px;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    .history-table th, .history-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .history-table th {
+      background: var(--bg-card-sub);
+      color: var(--text-muted);
+      position: sticky;
+      top: 0;
+      font-weight: 600;
+    }
+
+    .history-table tr {
+      cursor: pointer;
+    }
+    .history-table tr:hover td {
+      background: var(--bg-card-sub);
+      color: var(--primary);
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--bg-header);
+      border-top: 1px solid var(--border-color);
+      padding: 10px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 1280px) {
+      .app-container {
+        grid-template-columns: 300px 1fr 300px;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .app-container {
+        grid-template-columns: 1fr;
+      }
+      .right-col, .log-card {
+        min-height: 250px;
+      }
+    }
+
+    /* TOAST NOTIFICATION */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--primary);
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="header-left">
+      <div class="topic-badge">DT057</div>
+      <div class="header-title-box">
+        <h1>Mô Phỏng Thuật Toán Chia Mảng Chênh Tổng Ít Nhất</h1>
+        <p>Học phần: Cấu trúc dữ liệu và giải thuật (INT13185 · Nhóm 03) — GVHD: Hồ Nhựt Minh</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="author-info">
+        <div class="author-name">Võ Tấn Phát (N24DCDT067)</div>
+        <div class="author-sub">Lớp: D24CQDT01-N · Khoa Kỹ Thuật Điện Tử 2</div>
+      </div>
+      <button class="theme-toggle-btn" id="themeToggleBtn" title="Chuyển chế độ Giao diện">
+        <span id="themeIcon">☀️</span>
+        <span id="themeText">Sáng</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="app-container">
+
+    <!-- LEFT COLUMN: CẤU HÌNH BÀI TOÁN -->
+    <aside class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="icon">⚙️</span> CẤU HÌNH BÀI TOÁN
+        </div>
+        <span class="badge-status status-idle" id="statusBadge">Sẵn sàng</span>
+      </div>
+
+      <!-- INPUT MẢNG A -->
+      <div class="form-group">
+        <label for="arrayInput">Mảng đầu vào A (các số nguyên không âm):</label>
+        <input type="text" id="arrayInput" value="1, 6, 11, 5" placeholder="Ví dụ: 1, 6, 11, 5" spellcheck="false">
+      </div>
+
+      <!-- PRESET BUTTONS -->
+      <div class="form-group">
+        <label>Bộ dữ liệu mẫu trên phiếu & khảo sát:</label>
+        <div class="presets-container">
+          <button class="preset-btn" onclick="loadPreset([1, 6, 11, 5])">VD1: [1, 6, 11, 5]</button>
+          <button class="preset-btn" onclick="loadPreset([2, 2])">VD2: [2, 2]</button>
+          <button class="preset-btn" onclick="loadPreset([3, 1, 1, 2, 2, 1])">TK1: [3, 1, 1, 2, 2, 1]</button>
+          <button class="preset-btn" onclick="loadPreset([10, 20, 15, 5, 25])">TK2: [10, 20, 15, 5, 25]</button>
+          <button class="preset-btn" onclick="loadPreset([1, 1, 1])">Biên 1: [1, 1, 1]</button>
+          <button class="preset-btn" onclick="loadPreset([0, 0, 3])">Biên 2: [0, 0, 3]</button>
+          <button class="preset-btn" onclick="loadPreset([])">Biên 3: Rỗng []</button>
+          <button class="preset-btn" onclick="generateRandomArray()">🎲 Ngẫu nhiên</button>
+        </div>
+      </div>
+
+      <!-- INFO STATS -->
+      <div class="info-stats-grid">
+        <div class="stat-box">
+          <h4>Số phần tử (n)</h4>
+          <p id="statN">4</p>
+        </div>
+        <div class="stat-box">
+          <h4>Tổng mảng (S)</h4>
+          <p id="statS">23</p>
+        </div>
+        <div class="stat-box">
+          <h4>Nửa tổng (W)</h4>
+          <p id="statW">11</p>
+        </div>
+      </div>
+
+      <!-- CHẾ ĐỘ CHẠY -->
+      <div class="form-group">
+        <label for="runMode">Chế độ hiển thị mô phỏng:</label>
+        <select id="runMode">
+          <option value="step">Học từng bước (Tương tác chi tiết)</option>
+          <option value="auto">Chạy tự động (Hoạt họa theo tốc độ)</option>
+          <option value="fast">Chạy nhanh (Hiển thị kết quả ngay)</option>
+        </select>
+      </div>
+
+      <!-- TỐC ĐỘ SLIDER -->
+      <div class="form-group" id="speedBox">
+        <label>Tốc độ hoạt họa tự động:</label>
+        <div class="speed-slider-box">
+          <span>Chậm</span>
+          <input type="range" id="speedSlider" min="50" max="1200" step="50" value="400">
+          <span>Nhanh</span>
+          <span class="speed-val" id="speedLabel">400ms</span>
+        </div>
+      </div>
+
+      <!-- RÀNG BUỘC / TÙY CHỌN -->
+      <label class="checkbox-row" title="Ưu tiên nhánh chọn phần tử khi cả 2 nhánh đều True">
+        <input type="checkbox" id="prefPickCheckbox" checked>
+        <span>Ưu tiên chọn phần tử khi hòa giá trị</span>
+      </label>
+
+      <!-- MAIN ACTION BUTTONS -->
+      <button class="btn btn-primary" id="btnRun" onclick="handleStartRun()">
+        <span>▶</span> Chạy Thuật Toán
+      </button>
+
+      <!-- SUMMARY RESULT CARD -->
+      <div class="summary-card">
+        <div class="summary-row">
+          <span class="summary-label">Độ chênh lệch (|S₁ - S₂|):</span>
+          <span class="summary-val val-diff" id="resDiff">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Tổng Nhóm 1 (S₁):</span>
+          <span class="summary-val" id="resSum1" style="color: #60a5fa;">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Tổng Nhóm 2 (S₂):</span>
+          <span class="summary-val" id="resSum2" style="color: #fb7185;">—</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Bảo toàn tổng:</span>
+          <span class="summary-val" id="resInvariant">—</span>
+        </div>
+      </div>
+
+      <!-- EXPORT BUTTONS -->
+      <div class="btn-group-row">
+        <button class="btn btn-outline btn-sm" onclick="exportResultTxt()">📄 Xuất TXT</button>
+        <button class="btn btn-outline btn-sm" onclick="exportResultCsv()">📊 Xuất CSV</button>
+      </div>
+    </aside>
+
+    <!-- MIDDLE COLUMN: MÔ PHỎNG THUẬT TOÁN (CHÍNH) -->
+    <section class="middle-col">
+
+      <!-- MẢNG VÀ PHÂN NHÓM TRỰC QUAN -->
+      <div class="vis-section">
+        <div class="section-subtitle">
+          <span>MẢNG X (CHỈ SỐ & GIÁ TRỊ)</span>
+          <span id="elemCountNotice" style="font-size: 11px; font-weight: normal;">4 phần tử</span>
+        </div>
+        <div class="elements-chips-row" id="chipsContainer">
+          <!-- Dynamic element chips -->
+        </div>
+
+        <!-- 2 NHÓM SAU KHI LẦN VẾT -->
+        <div class="groups-split-container">
+          <div class="group-box g1">
+            <div class="group-box-header">
+              <span>🔵 Nhóm 1 (G₁)</span>
+              <span id="g1SumBadge">Tổng: 0</span>
+            </div>
+            <div class="group-elements-list" id="g1List">
+              <span style="font-size: 11px; color: var(--text-dim);">Chưa phân bổ</span>
+            </div>
+          </div>
+          <div class="group-box g2">
+            <div class="group-box-header">
+              <span>🔴 Nhóm 2 (G₂ - Phần bù)</span>
+              <span id="g2SumBadge">Tổng: 0</span>
+            </div>
+            <div class="group-elements-list" id="g2List">
+              <span style="font-size: 11px; color: var(--text-dim);">Chưa phân bổ</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BANNER HÀNH ĐỘNG HIỆN TẠI -->
+      <div class="action-banner">
+        <div class="action-header">
+          <span id="actionPhase">GIAI ĐOẠN: SẴN SÀNG</span>
+          <span id="actionStepIndex">Bước 0 / 0</span>
+        </div>
+        <div class="action-desc" id="actionDescription">
+          Nhập mảng A hoặc chọn dữ liệu mẫu ở cột trái, sau đó nhấn "Chạy Thuật Toán" để bắt đầu mô phỏng từng bước.
+        </div>
+        <div class="action-formula" id="actionFormula" style="display: none;">
+          dp[i, j] = dp[i-1, j] || dp[i-1, j - A[i]]
+        </div>
+      </div>
+
+      <!-- BẢNG QUY HOẠCH ĐỘNG DP MATRIX -->
+      <div class="card table-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">📋</span> BẢNG QUY HOẠCH ĐỘNG dp[i, j] (Hang: 0..n, Cột: 0..W)
+          </div>
+          <div style="font-size: 11px; color: var(--text-muted);">
+            <span style="display: inline-block; width: 10px; height: 10px; background: var(--success); border-radius: 2px;"></span> T = True &nbsp;
+            <span style="display: inline-block; width: 10px; height: 10px; background: var(--border-color); border-radius: 2px;"></span> · = False &nbsp;
+            <span style="display: inline-block; width: 10px; height: 10px; background: #f59e0b; border-radius: 2px;"></span> Lần vết
+          </div>
+        </div>
+        <div class="table-wrapper" id="dpTableWrapper">
+          <table class="dp-table" id="dpTable">
+            <!-- Dynamic DP Table -->
+          </table>
+        </div>
+      </div>
+
+      <!-- CONTROLS TOOLBAR -->
+      <div class="controls-toolbar">
+        <div class="playback-btns">
+          <button class="btn btn-outline btn-sm" id="btnPrev" onclick="stepBackward()" disabled title="Lùi lại 1 bước">
+            ⏮ Lùi
+          </button>
+          <button class="btn btn-primary btn-sm" id="btnNext" onclick="stepForward()" title="Thực hiện đúng 1 thao tác kế tiếp">
+            Bước tiếp theo ⏭
+          </button>
+          <button class="btn btn-outline btn-sm" id="btnAutoPlay" onclick="toggleAutoPlay()">
+            ▶ Tự động
+          </button>
+          <button class="btn btn-outline btn-sm" id="btnFast" onclick="jumpToEnd()" title="Chạy thẳng đến kết quả">
+            ⏩ Kết quả ngay
+          </button>
+          <button class="btn btn-outline btn-sm" id="btnReset" onclick="resetSimulation()" title="Khởi động lại trạng thái">
+            ↺ Làm lại
+          </button>
+        </div>
+        <div class="step-counter" id="stepCounterText">Bước 0 / 0</div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: NHẬT KÝ THỰC THI & LỊCH SỬ -->
+    <aside class="right-col">
+
+      <!-- LOG CARD -->
+      <div class="card log-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">📝</span> NHẬT KÝ THỰC THI
+          </div>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn btn-outline btn-sm" onclick="copyLogs()" title="Sao chép nhật ký">📋</button>
+            <button class="btn btn-outline btn-sm" onclick="clearLogs()" title="Xóa nhật ký">🗑️</button>
+          </div>
+        </div>
+        <div class="log-list" id="logList">
+          <!-- Logs will be appended here -->
+        </div>
+      </div>
+
+      <!-- HISTORY CARD -->
+      <div class="card history-card">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="icon">🕒</span> LỊCH SỬ GẦN ĐÂY
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="clearHistory()">Xóa</button>
+        </div>
+        <div class="history-wrapper">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Mảng A</th>
+                <th>S</th>
+                <th>W</th>
+                <th>Chênh</th>
+              </tr>
+            </thead>
+            <tbody id="historyTbody">
+              <!-- History rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    Đồ án môn học: Cấu trúc dữ liệu và giải thuật (INT13185 - Nhóm 03) · Đề tài DT057: Chia mảng thành hai nhóm chênh tổng ít nhất · Sinh viên: Võ Tấn Phát (N24DCDT067)
+  </footer>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toastBox">Thông báo</div>
+
+  <script>
+    /**
+     * THUẬT TOÁN ĐỀ TÀI DT057: CHIA MẢNG THÀNH HAI NHÓM CHÊNH TỔNG ÍT NHẤT
+     * Sinh viên: Võ Tấn Phát (N24DCDT067)
+     * Ngôn ngữ: HTML5, CSS3, Pure JavaScript (Không dùng framework)
+     */
+
+    // Trạng thái ứng dụng
+    let currentArray = [1, 6, 11, 5];
+    let n = 4, S = 23, W = 11;
+    let dpMatrix = []; // dp[i][j] (i: 0..n, j: 0..W)
+    let simulationSteps = [];
+    let currentStepIdx = -1;
+    let autoPlayTimer = null;
+    let isAutoPlaying = false;
+    let runHistory = [];
+
+    // Khởi tạo ban đầu
+    window.addEventListener("DOMContentLoaded", () => {
+      initTheme();
+      parseInputArray();
+      loadHistoryFromStorage();
+      renderInitialView();
+
+      // Listener thay đổi input
+      document.getElementById("arrayInput").addEventListener("change", () => {
+        parseInputArray();
+        renderInitialView();
+      });
+
+      // Listener slider tốc độ
+      const speedSlider = document.getElementById("speedSlider");
+      speedSlider.addEventListener("input", (e) => {
+        document.getElementById("speedLabel").textContent = e.target.value + "ms";
+        if (isAutoPlaying) {
+          restartAutoPlayTimer();
+        }
+      });
+    });
+
+    /* ================= THEME TOGGLE ================= */
+    function initTheme() {
+      const savedTheme = localStorage.getItem("dt057_theme") || "dark";
+      setTheme(savedTheme);
+      document.getElementById("themeToggleBtn").addEventListener("click", () => {
+        const curTheme = document.body.getAttribute("data-theme");
+        const nextTheme = curTheme === "dark" ? "light" : "dark";
+        setTheme(nextTheme);
+      });
+    }
+
+    function setTheme(theme) {
+      document.body.setAttribute("data-theme", theme);
+      localStorage.setItem("dt057_theme", theme);
+      const icon = document.getElementById("themeIcon");
+      const text = document.getElementById("themeText");
+      if (theme === "dark") {
+        icon.textContent = "☀️";
+        text.textContent = "Sáng";
+      } else {
+        icon.textContent = "🌙";
+        text.textContent = "Tối";
+      }
+    }
+
+    /* ================= TOAST ================= */
+    function showToast(msg) {
+      const toast = document.getElementById("toastBox");
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    /* ================= PARSE & VALIDATE INPUT ================= */
+    function parseInputArray() {
+      const inputStr = document.getElementById("arrayInput").value.trim();
+      if (!inputStr) {
+        currentArray = [];
+      } else {
+        const parts = inputStr.split(/[\s,]+/).filter(x => x.length > 0);
+        const parsed = [];
+        for (let p of parts) {
+          const num = Number(p);
+          if (isNaN(num) || !Number.isInteger(num) || num < 0) {
+            showToast("Lỗi: Mảng chỉ chấp nhận các số nguyên KHÔNG ÂM!");
+            return false;
+          }
+          parsed.push(num);
+        }
+        if (parsed.length > 25) {
+          showToast("Cảnh báo: n quá lớn (> 25), đã cắt bớt về 25 phần tử để hiển thị tốt nhất.");
+          parsed.length = 25;
+        }
+        currentArray = parsed;
+      }
+
+      n = currentArray.length;
+      S = currentArray.reduce((acc, v) => acc + v, 0);
+      W = Math.floor(S / 2);
+
+      // Cập nhật thống kê
+      document.getElementById("statN").textContent = n;
+      document.getElementById("statS").textContent = S;
+      document.getElementById("statW").textContent = W;
+      document.getElementById("elemCountNotice").textContent = `${n} phần tử`;
+
+      return true;
+    }
+
+    function loadPreset(arr) {
+      document.getElementById("arrayInput").value = arr.join(", ");
+      parseInputArray();
+      resetSimulation();
+      showToast(`Đã tải mẫu: [${arr.join(", ")}]`);
+    }
+
+    function generateRandomArray() {
+      const length = Math.floor(Math.random() * 5) + 3; // 3 to 7
+      const arr = [];
+      for (let i = 0; i < length; i++) {
+        arr.push(Math.floor(Math.random() * 15) + 1);
+      }
+      loadPreset(arr);
+    }
+
+    /* ================= TẠO BƯỚC MÔ PHỎNG (STEP GENERATOR) ================= */
+    function buildSimulationSteps() {
+      simulationSteps = [];
+
+      // 1. Khởi tạo mảng DP trống
+      dpMatrix = Array.from({ length: n + 1 }, () => Array(W + 1).fill(false));
+
+      // Bước 0: Bắt đầu
+      simulationSteps.push({
+        type: "START",
+        phase: "KHỞI TẠO",
+        actionText: `Bắt đầu thuật toán chia mảng: n = ${n}, Tổng mảng S = ${S}, Ngưỡng nửa tổng mục tiêu W = floor(${S}/2) = ${W}.`,
+        formula: `S = ${S}, W = ${W}`,
+        logType: "log-init",
+        dpSnapshot: JSON.parse(JSON.stringify(dpMatrix)),
+        activeCell: null,
+        sourceCells: [],
+        highlightElemIdx: null,
+        g1: [],
+        g2: [],
+        tracePath: []
+      });
+
+      // Nếu mảng rỗng
+      if (n === 0) {
+        dpMatrix[0][0] = true;
+        simulationSteps.push({
+          type: "BASE_CASE",
+          phase: "CA BIÊN ĐẶC BIỆT",
+          actionText: "Mảng rỗng (n = 0): Kết quả tối ưu ngay lập tức với 2 nhóm rỗng G1 = [], G2 = [], độ chênh lệch = 0.",
+          formula: "dp[0, 0] = True",
+          logType: "log-done",
+          dpSnapshot: JSON.parse(JSON.stringify(dpMatrix)),
+          activeCell: [0, 0],
+          sourceCells: [],
+          highlightElemIdx: null,
+          g1: [],
+          g2: [],
+          tracePath: [[0, 0]]
+        });
+        return;
+      }
+
+      // Bước cơ sở: dp[0, 0] = true
+      dpMatrix[0][0] = true;
+      simulationSteps.push({
+        type: "BASE_CASE",
+        phase: "CƠ SỞ QUY HOẠCH ĐỘNG",
+        actionText: "Khởi tạo ô cơ sở: dp[0, 0] = True (luôn tạo được mức tổng 0 từ tập rỗng 0 phần tử). Các ô dp[0, j] còn lại (j > 0) là False.",
+        formula: "dp[0, 0] = true, dp[0, 1..W] = false",
+        logType: "log-init",
+        dpSnapshot: JSON.parse(JSON.stringify(dpMatrix)),
+        activeCell: [0, 0],
+        sourceCells: [],
+        highlightElemIdx: null,
+        g1: [],
+        g2: [],
+        tracePath: []
+      });
+
+      // 2. Điền bảng DP (Hàng 1..n, Cột 0..W)
+      for (let i = 1; i <= n; i++) {
+        const val = currentArray[i - 1]; // 1-based index sang 0-based
+        for (let j = 0; j <= W; j++) {
+          const notPick = dpMatrix[i - 1][j];
+          let canPick = false;
+          const sources = [[i - 1, j]];
+
+          if (j >= val) {
+            canPick = dpMatrix[i - 1][j - val];
+            sources.push([i - 1, j - val]);
+          }
+
+          const result = notPick || canPick;
+          dpMatrix[i][j] = result;
+
+          let desc = `Xét phần tử thứ ${i} (A[${i}] = ${val}) tại mức tổng j = ${j}: `;
+          let formulaStr = `dp[${i}, ${j}] = dp[${i-1}, ${j}] (${notPick ? 'T' : 'F'})`;
+
+          if (j >= val) {
+            formulaStr += ` || dp[${i-1}, ${j - val}] (${canPick ? 'T' : 'F'}) -> ${result ? 'TRUE' : 'FALSE'}`;
+            if (canPick && !notPick) {
+              desc += `Vì chọn được A[${i}] = ${val} từ trạng thái dp[${i-1}, ${j - val}] = True -> Đạt được tổng ${j}!`;
+            } else if (notPick) {
+              desc += `Không cần chọn A[${i}] vì tổng ${j} đã đạt được từ trước (dp[${i-1}, ${j}] = True).`;
+            } else {
+              desc += `Cả hai nhánh đều False -> Chưa thể tạo được tổng ${j}.`;
+            }
+          } else {
+            formulaStr += ` (Vì j = ${j} < A[${i}] = ${val} nên không thể chọn A[${i}]) -> ${result ? 'TRUE' : 'FALSE'}`;
+            desc += notPick ? `Không chọn A[${i}], kế thừa tổng ${j} đã đạt từ trước.` : `Không đủ sức chứa và chưa đạt từ trước.`;
+          }
+
+          simulationSteps.push({
+            type: "FILL_CELL",
+            phase: `ĐIỀN BẢNG DP (HÀNG ${i}/${n})`,
+            actionText: desc,
+            formula: formulaStr,
+            logType: "log-dp",
+            dpSnapshot: JSON.parse(JSON.stringify(dpMatrix)),
+            activeCell: [i, j],
+            sourceCells: sources,
+            highlightElemIdx: i,
+            g1: [],
+            g2: [],
+            tracePath: []
+          });
+        }
+      }
+
+      // 3. Quét tìm best_sum <= W lớn nhất
+      let best_sum = 0;
+      for (let j = W; j >= 0; j--) {
+        simulationSteps.push({
+          type: "SCAN_BEST",
+          phase: "TÌM NGHIỆM TỐI ƯU",
+          actionText: `Quét hàng cuối n = ${n} từ cột ${j} lùi về: Kiểm tra ô dp[${n}, ${j}] = ${dpMatrix[n][j] ? 'True' : 'False'}.`,
+          formula: `dp[${n}, ${j}] == ${dpMatrix[n][j] ? 'True' : 'False'}`,
+          logType: "log-dp",
+          dpSnapshot: JSON.parse(JSON.stringify(dpMatrix)),
+          activeCell: [n, j],
+          sourceCells: [],
+          highlightElemIdx: null,
+          g1: [],
+          g2: [],
+          tracePath: []
+        });
+
+        if (dpMatrix[n][j]) {
+          best_sum = j;
+          break;
+        }
+      }
+
+      simulationSteps.push({
+        type: "FOUND_BEST",
+        phase: "XÁC NHẬN TỔNG TỐT NHẤT",
+        actionText: `Tìm thấy tổng con gần W nhất có thể đạt được: S1 = ${best_sum} <= ${W}. Bắt đầu lần vết phân nhóm!`,
+        formula: `S1 = ${best_sum}, S2 = S - S1 = ${S - best_sum}`,
+        logType: "log-trace",
+        dpSnapshot: JSON.parse(JSON.stringify(dpMatrix)),
+        activeCell: [n, best_sum],
+        sourceCells: [],
+        highlightElemIdx: null,
+        g1: [],
+        g2: [],
+        tracePath: [[n, best_sum]]
+      });
+
+      // 4. Lần vết (Traceback)
+      const prefPick = document.getElementById("prefPickCheckbox").checked;
+      let curr_j = best_sum;
+      const nhom1 = [];
+      const nhom2 = [];
+      const tracePath = [[n, best_sum]];
+
+      for (let i = n; i >= 1; i--) {
+        const val = currentArray[i - 1];
+        let chosen = false;
+
+        const canFromPrev = dpMatrix[i - 1][curr_j];
+        const canFromPick = (curr_j >= val && dpMatrix[i - 1][curr_j - val]);
+
+        if (canFromPick && !canFromPrev) {
+          chosen = true;
+        } else if (canFromPick && canFromPrev) {
+          // Hòa nhánh: dựa vào tùy chọn
+          chosen = prefPick && val > 0;
+        } else {
+          chosen = false;
+        }
+
+        let desc = `Lần vết tại hàng ${i} (A[${i}] = ${val}, tổng còn lại curr_j = ${curr_j}): `;
+        if (chosen) {
+          nhom1.push(i);
+          curr_j -= val;
+          tracePath.push([i - 1, curr_j]);
+          desc += `Quyết định ĐƯA A[${i}] = ${val} vào NHÓM 1. Tổng còn lại cần tìm: ${curr_j}.`;
+        } else {
+          nhom2.push(i);
+          tracePath.push([i - 1, curr_j]);
+          desc += `Không chọn A[${i}] vào Nhóm 1 -> ĐƯA A[${i}] = ${val} vào NHÓM 2 (Phần bù).`;
+        }
+
+        simulationSteps.push({
+          type: "TRACE_STEP",
+          phase: `LẦN VẾT NGƯỢC (HÀNG ${i})`,
+          actionText: desc,
+          formula: chosen ? `Chọn A[${i}] = ${val} -> Nhóm 1` : `Bỏ A[${i}] -> Nhóm 2`,
+          logType: "log-trace",
+          dpSnapshot: JSON.parse(JSON.stringify(dpMatrix)),
+          activeCell: [i - 1, curr_j],
+          sourceCells: [[i, curr_j + (chosen ? val : 0)]],
+          highlightElemIdx: i,
+          g1: [...nhom1].sort((a,b)=>a-b),
+          g2: [...nhom2].sort((a,b)=>a-b),
+          tracePath: [...tracePath]
+        });
+      }
+
+      // Hoàn tất phân nhóm
+      nhom1.sort((a, b) => a - b);
+      nhom2.sort((a, b) => a - b);
+      const sum1 = nhom1.reduce((acc, idx) => acc + currentArray[idx - 1], 0);
+      const sum2 = nhom2.reduce((acc, idx) => acc + currentArray[idx - 1], 0);
+      const diff = Math.abs(sum1 - sum2);
+
+      simulationSteps.push({
+        type: "COMPLETE",
+        phase: "HOÀN TẤT THUẬT TOÁN",
+        actionText: `Phân chia thành công! Nhóm 1 (IDs: [${nhom1.join(', ')}]) tổng ${sum1}. Nhóm 2 (IDs: [${nhom2.join(', ')}]) tổng ${sum2}. Độ chênh lệch tối ưu: |${sum1} - ${sum2}| = ${diff}.`,
+        formula: `diff = |${sum1} - ${sum2}| = ${diff}`,
+        logType: "log-done",
+        dpSnapshot: JSON.parse(JSON.stringify(dpMatrix)),
+        activeCell: null,
+        sourceCells: [],
+        highlightElemIdx: null,
+        g1: nhom1,
+        g2: nhom2,
+        tracePath: tracePath,
+        finalResult: { diff, sum1, sum2, nhom1, nhom2 }
+      });
+    }
+
+    /* ================= RENDER FUNCTIONS ================= */
+    function renderInitialView() {
+      // 1. Render chips
+      renderElementChips(null, [], []);
+      // 2. Render empty DP Table
+      renderDpTableStructure();
+      // 3. Clear results & action banner
+      document.getElementById("resDiff").textContent = "—";
+      document.getElementById("resSum1").textContent = "—";
+      document.getElementById("resSum2").textContent = "—";
+      document.getElementById("resInvariant").textContent = "—";
+      document.getElementById("g1SumBadge").textContent = "Tổng: 0";
+      document.getElementById("g2SumBadge").textContent = "Tổng: 0";
+      document.getElementById("g1List").innerHTML = `<span style="font-size: 11px; color: var(--text-dim);">Chưa phân bổ</span>`;
+      document.getElementById("g2List").innerHTML = `<span style="font-size: 11px; color: var(--text-dim);">Chưa phân bổ</span>`;
+      document.getElementById("actionPhase").textContent = "GIAI ĐOẠN: SẴN SÀNG";
+      document.getElementById("actionStepIndex").textContent = "Bước 0 / 0";
+      document.getElementById("actionDescription").textContent = "Nhấn 'Chạy Thuật Toán' để bắt đầu mô phỏng từng bước hoặc chạy tự động.";
+      document.getElementById("actionFormula").style.display = "none";
+      updatePlaybackControls();
+    }
+
+    function renderElementChips(activeIdx, g1Ids, g2Ids) {
+      const container = document.getElementById("chipsContainer");
+      if (currentArray.length === 0) {
+        container.innerHTML = `<span style="font-size: 13px; color: var(--text-dim);">Mảng rỗng []</span>`;
+        return;
+      }
+      container.innerHTML = currentArray.map((val, idx) => {
+        const i = idx + 1;
+        let cls = "elem-chip";
+        if (i === activeIdx) cls += " active";
+        if (g1Ids.includes(i)) cls += " group-1";
+        if (g2Ids.includes(i)) cls += " group-2";
+        return `
+          <div class="${cls}" id="chip_${i}">
+            <span class="chip-idx">ID ${i}</span>
+            <span class="chip-val">${val}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderGroupLists(g1Ids, g2Ids) {
+      const g1Container = document.getElementById("g1List");
+      const g2Container = document.getElementById("g2List");
+
+      if (g1Ids.length === 0) {
+        g1Container.innerHTML = `<span style="font-size: 11px; color: var(--text-dim);">Trống</span>`;
+      } else {
+        const s1 = g1Ids.reduce((acc, id) => acc + currentArray[id - 1], 0);
+        document.getElementById("g1SumBadge").textContent = `Tổng: ${s1}`;
+        g1Container.innerHTML = g1Ids.map(id => `
+          <span class="mini-badge" style="color: #60a5fa; border-color: #3b82f6;">ID ${id}: <b>${currentArray[id - 1]}</b></span>
+        `).join("");
+      }
+
+      if (g2Ids.length === 0) {
+        g2Container.innerHTML = `<span style="font-size: 11px; color: var(--text-dim);">Trống</span>`;
+      } else {
+        const s2 = g2Ids.reduce((acc, id) => acc + currentArray[id - 1], 0);
+        document.getElementById("g2SumBadge").textContent = `Tổng: ${s2}`;
+        g2Container.innerHTML = g2Ids.map(id => `
+          <span class="mini-badge" style="color: #fb7185; border-color: #f43f5e;">ID ${id}: <b>${currentArray[id - 1]}</b></span>
+        `).join("");
+      }
+    }
+
+    function renderDpTableStructure() {
+      const table = document.getElementById("dpTable");
+      if (currentArray.length === 0) {
+        table.innerHTML = `<tr><td style="padding: 20px; color: var(--text-muted);">Mảng rỗng: Bảng kích thước 1x1 [0, 0] = True</td></tr>`;
+        return;
+      }
+
+      // Header row: j from 0 to W
+      let headerHtml = `<tr><th class="sticky-col">i \\ j</th>`;
+      for (let j = 0; j <= W; j++) {
+        headerHtml += `<th>${j}</th>`;
+      }
+      headerHtml += `</tr>`;
+
+      // Body rows: i from 0 to n
+      let bodyHtml = "";
+      for (let i = 0; i <= n; i++) {
+        const rowLabel = i === 0 ? "i=0 (-)" : `i=${i} (${currentArray[i - 1]})`;
+        bodyHtml += `<tr><td class="sticky-col">${rowLabel}</td>`;
+        for (let j = 0; j <= W; j++) {
+          bodyHtml += `<td id="cell_${i}_${j}">·</td>`;
+        }
+        bodyHtml += `</tr>`;
+      }
+
+      table.innerHTML = headerHtml + bodyHtml;
+    }
+
+    function applyStepToView(step) {
+      if (!step) return;
+
+      // 1. Cập nhật action banner
+      document.getElementById("actionPhase").textContent = step.phase;
+      document.getElementById("actionStepIndex").textContent = `Bước ${currentStepIdx + 1} / ${simulationSteps.length}`;
+      document.getElementById("actionDescription").textContent = step.actionText;
+
+      const formulaEl = document.getElementById("actionFormula");
+      if (step.formula) {
+        formulaEl.style.display = "inline-block";
+        formulaEl.textContent = step.formula;
+      } else {
+        formulaEl.style.display = "none";
+      }
+
+      // 2. Cập nhật mảng chips & groups
+      renderElementChips(step.highlightElemIdx, step.g1, step.g2);
+      renderGroupLists(step.g1, step.g2);
+
+      // 3. Cập nhật bảng DP
+      // Xóa tất cả highlight cũ
+      document.querySelectorAll(".dp-table td").forEach(td => {
+        td.classList.remove("cell-active", "cell-source", "cell-trace");
+      });
+
+      // Điền giá trị bảng từ snapshot
+      const snapshot = step.dpSnapshot;
+      for (let i = 0; i <= n; i++) {
+        for (let j = 0; j <= W; j++) {
+          const td = document.getElementById(`cell_${i}_${j}`);
+          if (td) {
+            const val = snapshot[i] && snapshot[i][j];
+            td.textContent = val ? "T" : "·";
+            td.className = val ? "val-true" : "val-false";
+            if (j === 0) td.classList.add("sticky-col-after"); // css helper
+          }
+        }
+      }
+
+      // Highlight active cell
+      if (step.activeCell) {
+        const [ai, aj] = step.activeCell;
+        const cell = document.getElementById(`cell_${ai}_${aj}`);
+        if (cell) cell.classList.add("cell-active");
+      }
+
+      // Highlight source cells
+      if (step.sourceCells) {
+        step.sourceCells.forEach(([si, sj]) => {
+          const cell = document.getElementById(`cell_${si}_${sj}`);
+          if (cell) cell.classList.add("cell-source");
+        });
+      }
+
+      // Highlight trace path cells
+      if (step.tracePath) {
+        step.tracePath.forEach(([ti, tj]) => {
+          const cell = document.getElementById(`cell_${ti}_${tj}`);
+          if (cell) cell.classList.add("cell-trace");
+        });
+      }
+
+      // 4. Nếu là bước cuối cùng (Done)
+      if (step.type === "COMPLETE" && step.finalResult) {
+        const r = step.finalResult;
+        document.getElementById("resDiff").textContent = r.diff;
+        document.getElementById("resSum1").textContent = `${r.sum1} (IDs: ${r.nhom1.join(", ")})`;
+        document.getElementById("resSum2").textContent = `${r.sum2} (IDs: ${r.nhom2.join(", ")})`;
+        document.getElementById("resInvariant").textContent = `${r.sum1} + ${r.sum2} = ${S} (ĐÚNG)`;
+        setStatus("done", "Hoàn thành");
+        addHistoryRecord(currentArray, r.diff, r.sum1, r.sum2);
+      }
+
+      // 5. Thêm log
+      appendLog(step.phase, step.actionText, step.logType);
+
+      updatePlaybackControls();
+    }
+
+    /* ================= PLAYBACK CONTROLS ================= */
+    function handleStartRun() {
+      if (!parseInputArray()) return;
+
+      buildSimulationSteps();
+      currentStepIdx = 0;
+      clearLogs();
+      renderDpTableStructure();
+
+      const mode = document.getElementById("runMode").value;
+      if (mode === "fast") {
+        jumpToEnd();
+      } else if (mode === "auto") {
+        applyStepToView(simulationSteps[currentStepIdx]);
+        startAutoPlay();
+      } else {
+        // step-by-step
+        setStatus("running", "Đang học từng bước");
+        applyStepToView(simulationSteps[currentStepIdx]);
+      }
+    }
+
+    function stepForward() {
+      if (simulationSteps.length === 0) {
+        handleStartRun();
+        return;
+      }
+      if (currentStepIdx < simulationSteps.length - 1) {
+        currentStepIdx++;
+        applyStepToView(simulationSteps[currentStepIdx]);
+      } else {
+        pauseAutoPlay();
+        showToast("Đã đến bước cuối cùng của thuật toán!");
+      }
+    }
+
+    function stepBackward() {
+      if (currentStepIdx > 0) {
+        pauseAutoPlay();
+        currentStepIdx--;
+        applyStepToView(simulationSteps[currentStepIdx]);
+      }
+    }
+
+    function jumpToEnd() {
+      pauseAutoPlay();
+      if (simulationSteps.length === 0) {
+        buildSimulationSteps();
+      }
+      currentStepIdx = simulationSteps.length - 1;
+      applyStepToView(simulationSteps[currentStepIdx]);
+      showToast("Đã chạy nhanh và hiển thị kết quả toàn bộ!");
+    }
+
+    function toggleAutoPlay() {
+      if (isAutoPlaying) {
+        pauseAutoPlay();
+      } else {
+        if (simulationSteps.length === 0 || currentStepIdx >= simulationSteps.length - 1) {
+          handleStartRun();
+        }
+        startAutoPlay();
+      }
+    }
+
+    function startAutoPlay() {
+      isAutoPlaying = true;
+      setStatus("running", "Đang chạy tự động");
+      document.getElementById("btnAutoPlay").innerHTML = "⏸ Tạm dừng";
+      document.getElementById("btnAutoPlay").classList.add("btn-danger");
+      document.getElementById("btnAutoPlay").classList.remove("btn-outline");
+
+      restartAutoPlayTimer();
+    }
+
+    function restartAutoPlayTimer() {
+      if (autoPlayTimer) clearInterval(autoPlayTimer);
+      const delay = parseInt(document.getElementById("speedSlider").value) || 400;
+      autoPlayTimer = setInterval(() => {
+        if (currentStepIdx < simulationSteps.length - 1) {
+          stepForward();
+        } else {
+          pauseAutoPlay();
+        }
+      }, delay);
+    }
+
+    function pauseAutoPlay() {
+      isAutoPlaying = false;
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+      }
+      const btn = document.getElementById("btnAutoPlay");
+      btn.innerHTML = "▶ Tự động";
+      btn.classList.remove("btn-danger");
+      btn.classList.add("btn-outline");
+      if (currentStepIdx < simulationSteps.length - 1 && currentStepIdx > 0) {
+        setStatus("paused", "Đã tạm dừng");
+      }
+    }
+
+    function resetSimulation() {
+      pauseAutoPlay();
+      currentStepIdx = -1;
+      simulationSteps = [];
+      setStatus("idle", "Sẵn sàng");
+      renderInitialView();
+      showToast("Đã khởi tạo lại trạng thái mô phỏng.");
+    }
+
+    function updatePlaybackControls() {
+      const btnPrev = document.getElementById("btnPrev");
+      const btnNext = document.getElementById("btnNext");
+      const counter = document.getElementById("stepCounterText");
+
+      if (simulationSteps.length === 0) {
+        btnPrev.disabled = true;
+        btnNext.disabled = false;
+        counter.textContent = "Bước 0 / 0";
+      } else {
+        btnPrev.disabled = (currentStepIdx <= 0);
+        btnNext.disabled = (currentStepIdx >= simulationSteps.length - 1);
+        counter.textContent = `Bước ${currentStepIdx + 1} / ${simulationSteps.length}`;
+      }
+    }
+
+    function setStatus(type, label) {
+      const badge = document.getElementById("statusBadge");
+      badge.className = `badge-status status-${type}`;
+      badge.textContent = label;
+    }
+
+    /* ================= LOGS MANAGEMENT ================= */
+    function appendLog(phase, text, typeCls) {
+      const logList = document.getElementById("logList");
+      const item = document.createElement("div");
+      item.className = `log-item ${typeCls || 'log-dp'}`;
+      item.innerHTML = `
+        <span class="log-step-badge">B${currentStepIdx + 1}</span>
+        <span class="log-text"><b>[${phase}]</b> ${text}</span>
+      `;
+      logList.appendChild(item);
+      logList.scrollTop = logList.scrollHeight;
+    }
+
+    function clearLogs() {
+      document.getElementById("logList").innerHTML = "";
+    }
+
+    function copyLogs() {
+      const logList = document.getElementById("logList");
+      const text = logList.innerText;
+      if (!text) {
+        showToast("Nhật ký hiện đang trống!");
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Đã sao chép nhật ký vào Clipboard!");
+      }).catch(() => {
+        showToast("Lỗi khi sao chép nhật ký.");
+      });
+    }
+
+    /* ================= HISTORY MANAGEMENT ================= */
+    function addHistoryRecord(arr, diff, sum1, sum2) {
+      const record = {
+        arr: [...arr],
+        n: arr.length,
+        s: S,
+        w: W,
+        diff,
+        sum1,
+        sum2,
+        time: new Date().toLocaleTimeString("vi-VN")
+      };
+      runHistory.unshift(record);
+      if (runHistory.length > 8) runHistory.pop();
+      saveHistoryToStorage();
+      renderHistoryTable();
+    }
+
+    function renderHistoryTable() {
+      const tbody = document.getElementById("historyTbody");
+      if (runHistory.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-dim); padding:12px;">Chưa có lịch sử chạy</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = runHistory.map((h, idx) => `
+        <tr onclick="loadPreset([${h.arr.join(',')}])" title="Bấm để tải lại mẫu này">
+          <td><b>[${h.arr.join(',')}]</b></td>
+          <td>${h.s}</td>
+          <td>${h.w}</td>
+          <td style="color:var(--warning); font-weight:bold;">${h.diff}</td>
+        </tr>
+      `).join("");
+    }
+
+    function saveHistoryToStorage() {
+      try {
+        localStorage.setItem("dt057_history", JSON.stringify(runHistory));
+      } catch(e) {}
+    }
+
+    function loadHistoryFromStorage() {
+      try {
+        const raw = localStorage.getItem("dt057_history");
+        if (raw) {
+          runHistory = JSON.parse(raw);
+          renderHistoryTable();
+        }
+      } catch(e) {}
+    }
+
+    function clearHistory() {
+      runHistory = [];
+      saveHistoryToStorage();
+      renderHistoryTable();
+      showToast("Đã xóa lịch sử gần đây.");
+    }
+
+    /* ================= EXPORT TXT / CSV ================= */
+    function exportResultTxt() {
+      if (currentStepIdx < 0 || simulationSteps.length === 0) {
+        showToast("Vui lòng chạy thuật toán trước khi xuất kết quả!");
+        return;
+      }
+      const lastStep = simulationSteps[simulationSteps.length - 1];
+      const r = lastStep.finalResult;
+      if (!r) {
+        showToast("Chưa hoàn thành phân chia để xuất!");
+        return;
+      }
+
+      let content = `================================================================\n`;
+      content += `KẾT QUẢ MÔ PHỎNG THUẬT TOÁN ĐỀ TÀI DT057\n`;
+      content += `CHIA MẢNG THÀNH HAI NHÓM CHÊNH TỔNG ÍT NHẤT\n`;
+      content += `Sinh viên: Võ Tấn Phát | MSSV: N24DCDT067 | Lớp: D24CQDT01-N\n`;
+      content += `INT13185 - Nhóm 03 | GVHD: Hồ Nhựt Minh\n`;
+      content += `================================================================\n\n`;
+      content += `Mảng đầu vào A: [${currentArray.join(", ")}]\n`;
+      content += `Số phần tử n = ${n}, Tổng mảng S = ${S}, Nửa tổng W = ${W}\n\n`;
+      content += `Nhóm 1 (G1):\n`;
+      content += `  - Danh sách ID: [${r.nhom1.join(", ")}]\n`;
+      content += `  - Các giá trị: [${r.nhom1.map(i => currentArray[i - 1]).join(", ")}]\n`;
+      content += `  - Tổng Nhóm 1: S1 = ${r.sum1}\n\n`;
+      content += `Nhóm 2 (G2 - Phần bù):\n`;
+      content += `  - Danh sách ID: [${r.nhom2.join(", ")}]\n`;
+      content += `  - Các giá trị: [${r.nhom2.map(i => currentArray[i - 1]).join(", ")}]\n`;
+      content += `  - Tổng Nhóm 2: S2 = ${r.sum2}\n\n`;
+      content += `ĐỘ CHÊNH LỆCH NHỎ NHẤT: |${r.sum1} - ${r.sum2}| = ${r.diff}\n`;
+      content += `Kiểm tra bảo toàn tổng: ${r.sum1} + ${r.sum2} = ${S} (ĐÚNG)\n`;
+      content += `Thời gian xuất: ${new Date().toLocaleString("vi-VN")}\n`;
+
+      downloadBlob(content, `DT057_N24DCDT067_KetQua_${Date.now()}.txt`, "text/plain;charset=utf-8");
+      showToast("Đã xuất file TXT thành công!");
+    }
+
+    function exportResultCsv() {
+      if (currentStepIdx < 0 || simulationSteps.length === 0) {
+        showToast("Vui lòng chạy thuật toán trước khi xuất CSV!");
+        return;
+      }
+      const lastStep = simulationSteps[simulationSteps.length - 1];
+      const r = lastStep.finalResult;
+      if (!r) {
+        showToast("Chưa hoàn thành phân chia để xuất!");
+        return;
+      }
+
+      let csv = "\uFEFF"; // BOM for Excel UTF-8
+      csv += "STT,PhanTu_GiaTri,ThuocNhom\n";
+      for (let i = 1; i <= n; i++) {
+        const val = currentArray[i - 1];
+        const group = r.nhom1.includes(i) ? "Nhom 1" : "Nhom 2";
+        csv += `${i},${val},${group}\n`;
+      }
+      csv += `\nTong_Mang,${S}\n`;
+      csv += `Nua_Tong_W,${W}\n`;
+      csv += `Tong_Nhom1,${r.sum1}\n`;
+      csv += `Tong_Nhom2,${r.sum2}\n`;
+      csv += `Do_Chenh_Lech,${r.diff}\n`;
+
+      downloadBlob(csv, `DT057_N24DCDT067_KetQua_${Date.now()}.csv`, "text/csv;charset=utf-8");
+      showToast("Đã xuất file CSV thành công!");
+    }
+
+    function downloadBlob(content, filename, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
+
